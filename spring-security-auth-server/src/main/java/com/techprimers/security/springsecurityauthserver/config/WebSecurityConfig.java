@@ -18,17 +18,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${server.error.path:${error.path:/error}}") 
     private String urlError;
 
-    /*@Autowired
-    private AuthenticationManager authenticationManager;*/
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http.authorizeRequests()
                     .antMatchers(urlError).permitAll()
                     .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").permitAll();
+                .formLogin().loginPage("/login").permitAll()
+                .and()
+                .httpBasic().disable();
     }
 
     @Override
