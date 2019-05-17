@@ -26,21 +26,20 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .checkTokenAccess("isAuthenticated()");
     }
 
-
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
                 .inMemory()
                 .withClient("ClientId")
                 .secret("secret")
-                .authorizedGrantTypes("authorization_code")
+                .authorizedGrantTypes("authorization_code", "refresh_token")
                 .scopes("user_info")
+                .redirectUris("http://localhost:8082/ui/login")
                 .autoApprove(true);
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-
         endpoints.authenticationManager(authenticationManager);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.*;
 
 @EnableWebMvc
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {

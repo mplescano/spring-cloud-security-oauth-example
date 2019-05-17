@@ -44,6 +44,11 @@
                 <artifactId>thymeleaf-extras-springsecurity4</artifactId>
                 <version>3.0.4.RELEASE</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.security.oauth.boot</groupId>
+                <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+                <version>2.1.4.RELEASE</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -120,10 +125,6 @@
         <profile>
             <id>spring-boot</id>
             <activation>
-                <property>
-                    <name>spring-build</name>
-                    <value>true</value>
-                </property>
                 <file>
                     <!-- Just a way to identify a Spring Boot application -->
                     <exists>src/main/resources/bootstrap.properties</exists>
@@ -178,85 +179,18 @@
                         <groupId>pl.project13.maven</groupId>
                         <artifactId>git-commit-id-plugin</artifactId>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-resources-2</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <overwrite>true</overwrite>
-                                    <outputDirectory>${project.build.directory}/docker-build/</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${docker.image.dockerfile.dir}</directory>
-                                        </resource>
-                                        <resource>
-                                            <directory>${project.build.directory}</directory>
-                                            <include>*-war-exec.jar</include>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- hack in order to pass multiples ports in EXPOSE -->
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>replace-snip-text</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <replace token="${EXPOSED_PORT}"
-                                            value="${docker.image.exposed.port}"
-                                            dir="${project.build.directory}/docker-build/">
-                                            <include name="Dockerfile" />
-                                        </replace>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <version>${docker.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>install-build</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <repository>${docker.image.prefix}/${project.artifactId}</repository>
-                            <tag>${project.version}</tag>
-                            <tag>latest</tag>
-                            <contextDirectory>${project.build.directory}/docker-build/</contextDirectory>
-                            <googleContainerRegistryEnabled>false</googleContainerRegistryEnabled>
-                            <buildArgs>
-                                <ARTIFACT_NAME>${project.build.finalName}-war-exec</ARTIFACT_NAME>
-                                <EXPOSED_PORT>${docker.image.exposed.port}</EXPOSED_PORT>
-                                <TYPE_APP>${docker.type.app}</TYPE_APP>
-                            </buildArgs>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>central.maven</id>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <url>http://central.maven.org/maven2</url>
+        </repository>
+    </repositories>
 </project>

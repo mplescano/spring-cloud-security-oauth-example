@@ -1,17 +1,19 @@
 package com.techprimers.security.springsecurityauthserver.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
-/*@EnableResourceServer*/
 @Configuration
-public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
+@Order(SecurityProperties.BASIC_AUTH_ORDER - 6)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${server.error.path:${error.path:/error}}") 
     private String urlError;
@@ -22,18 +24,11 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable()
-            .requestMatchers()
-                .antMatchers("/login", urlError)
-                .and()
-                .authorizeRequests()
-                    .antMatchers("/login").permitAll()
+        http.authorizeRequests()
                     .antMatchers(urlError).permitAll()
-                    .anyRequest()
-                    .authenticated()
+                    .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .permitAll();
+                .formLogin().loginPage("/login").permitAll();
     }
 
     @Override
@@ -43,7 +38,8 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
                 .inMemoryAuthentication()
                 .withUser("Peter")
                 .password("peter")
-                .roles("USER");
+                .roles("USER")
+                .and().withUser("admin").password("admin").roles("ADMIN");
     }
     
     @Override
@@ -51,5 +47,11 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() 
       throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Bean
+    public static NoOpPasswordEncoder passwordEncoder() {
+        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
     }
 }

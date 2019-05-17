@@ -9,11 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class OauthConfig extends WebSecurityConfigurerAdapter{
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.antMatcher("/**")
+        http.csrf().disable()
+        	.antMatcher("/**")
                 .authorizeRequests()
                 .antMatchers("/", "/login**")
                 .permitAll()
