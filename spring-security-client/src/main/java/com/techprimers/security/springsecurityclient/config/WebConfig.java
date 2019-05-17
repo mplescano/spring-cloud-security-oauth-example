@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.*;
 
 @EnableWebMvc
 @Configuration
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
@@ -17,7 +17,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        super.addViewControllers(registry);
+        //super.addViewControllers(registry);
 
         registry.addViewController("/")
                 .setViewName("forward:/index");
